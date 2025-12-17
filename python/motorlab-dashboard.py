@@ -76,7 +76,7 @@ palette = ("#101418", "#c00000", "#c000c0", "#c06000", "#00c000", "#0072c3", "#6
 RESOURCE_PATH = 'res'
 if hasattr(sys, '_MEIPASS'):
     RESOURCE_PATH = os.path.join(sys._MEIPASS, RESOURCE_PATH)
-    os.environ['PATH'] = sys._MEIPASS + '\;' + os.environ.get('PATH', '')
+    os.environ['PATH'] = sys._MEIPASS + '\\;' + os.environ.get('PATH', '')
 USB_CON_IMG = os.path.join(RESOURCE_PATH, 'plug-connect.png')
 USB_DCON_IMG = os.path.join(RESOURCE_PATH, 'plug-disconnect.png')
 
@@ -178,9 +178,9 @@ class Dashboard(QMainWindow):
         #### SETTINGS GROUP ##########################################
         self.settings_grid = QGridLayout()
         self.settings_grid.setContentsMargins(0, 0, 0, 0)
-        self.spin_biasff = self.double_spinbox("biasFF", 0.0, 0.4, 0.01, 2)
-        self.spin_speedff = self.double_spinbox("speedFF", 0.0, 0.001, 0.00001, 5)
-        self.spin_accff = self.double_spinbox("accFF", 0.0, 0.001, 0.00001, 5)
+        self.spin_biasff = self.double_spinbox("biasFF", 0.0, 0.5, 0.01, 2)
+        self.spin_speedff = self.double_spinbox("speedFF", 0.0, 0.1, 0.00001, 5)
+        self.spin_accff = self.double_spinbox("accFF", 0.0, 0.01, 0.00001, 5)
         self.spin_zeta = self.double_spinbox("zeta", 0.0, 2.0, 0.005, 3)
         self.spin_td = self.double_spinbox("Td", 0.0, 1.00, 0.01, 3)
         self.spin_kp = self.double_spinbox("KP", 0.0, 8.0, 0.001, 4)
@@ -208,9 +208,9 @@ class Dashboard(QMainWindow):
         self.lbl_speedff.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
         self.lbl_accff = QLabel("  Acc FF:")
         self.lbl_accff.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
-        self.lbl_zeta = QLabel("Damping Ratio:")
+        self.lbl_zeta = QLabel("Damping Ratio: (Zeta)")
         self.lbl_zeta.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
-        self.lbl_td = QLabel("Settling Time:")
+        self.lbl_td = QLabel("Settling Time (Td):")
         self.lbl_td.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
         self.lbl_kp = QLabel("Kp:")
         self.lbl_kp.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
@@ -491,7 +491,7 @@ class Dashboard(QMainWindow):
         self.data = []
 
     def get_response(self):
-        time.sleep(0.25)  # let the arduino boot
+        #time.sleep(0.25)  # let the arduino boot
         data = []
         done = False
         while not done:
@@ -520,7 +520,8 @@ class Dashboard(QMainWindow):
     #############################################################################
 
     def device_init(self):
-        # time.sleep(0.5) # let the arduino boot
+        #time.sleep(0.5) # let the arduino boot
+        self.write('?\n')
         self.data = self.get_response()
         self.log_data()
         self.write('echo off\n')
@@ -674,8 +675,8 @@ class Dashboard(QMainWindow):
                     f = d[-1]
                 d[i].append(f)
         for i in range(len(d[0])):
-            d[5][i] = min(d[5][i], 6.0)
-            d[5][i] = max(d[5][i], -6.0)
+            d[5][i] = min(d[5][i], 8.0)
+            d[5][i] = max(d[5][i], -8.0)
 
         self.output_plot.clear()
         if self.move_mode == NO_FF:
@@ -734,14 +735,16 @@ class PortUpdate(QThread):
                 # 10C4:80A9 is a CP210x UART bridge - SiLabs adaptor
                 # 2341:0058 is the Arduino Nano Every
                 # print(p.hwid)
-                if '1A86:' in p.hwid or '10C4:' in p.hwid or '2341:' in p.hwid:
+                if '1A86:' in p.hwid or '10C4:' in p.hwid or '2341:' in p.hwid or '2E8A:' in p.hwid:
                     port = p.device
                     break
+                #else:
+                #    print(f"Unrecognised device {p.hwid}")
 
             # When specific vendor ID was found AND it's a new port
             if port and port != app_window.device:
                 msg = F'{p} {p.hwid} {p.manufacturer} {p.description} {p.device}'
-                # print(msg)
+                print(msg)
                 app_window.usb_con.emit(port, p.hwid)
             elif not port:
                 app_window.usb_dis.emit()
