@@ -53,12 +53,20 @@ cli_status_t set_get_kd(const Args &args);
 cli_status_t set_get_zeta(const Args &args);
 cli_status_t set_get_td(const Args &args);
 
+cli_status_t set_get_rkm(const Args &args);
+cli_status_t set_get_rtm(const Args &args);
+cli_status_t set_get_rkp(const Args &args);
+cli_status_t set_get_rkd(const Args &args);
+cli_status_t set_get_rzeta(const Args &args);
+cli_status_t set_get_rtd(const Args &args);
+
 cli_status_t set_get_bias_ff(const Args &args);
 cli_status_t set_get_speed_ff(const Args &args);
 cli_status_t set_get_acc_ff(const Args &args);
 
 cli_status_t get_battery_volts(const Args &args);
 cli_status_t do_move(const Args &args);
+cli_status_t do_turn(const Args &args);
 cli_status_t do_step(const Args &args);
 cli_status_t do_encoders(const Args &args);
 cli_status_t do_open_loop(const Args &args);

@@ -64,6 +64,16 @@ cli_status_t set_get_tm(const Args &args) {
   return cli_status_t();
 }
 
+cli_status_t set_get_rkm(const Args &args) {
+  cmdSetGet(settings.data.rKm, 0.0f, 10000.0f, args, 1);
+  return cli_status_t();
+}
+
+cli_status_t set_get_rtm(const Args &args) {
+  cmdSetGet(settings.data.rTm, 0.0f, 10.0f, args, 6);
+  return cli_status_t();
+}
+
 cli_status_t set_get_kp(const Args &args) {
   cmdSetGet(settings.data.Kp, 0.0f, 10.0f, args, 6);
   return cli_status_t();
@@ -81,6 +91,26 @@ cli_status_t set_get_zeta(const Args &args) {
 
 cli_status_t set_get_td(const Args &args) {
   cmdSetGet(settings.data.Td, 0.0f, 1.0f, args, 6);
+  return cli_status_t();
+}
+
+cli_status_t set_get_rkp(const Args &args) {
+  cmdSetGet(settings.data.rKp, 0.0f, 10.0f, args, 6);
+  return cli_status_t();
+}
+
+cli_status_t set_get_rkd(const Args &args) {
+  cmdSetGet(settings.data.rKd, 0.0f, 10.0f, args, 6);
+  return cli_status_t();
+}
+
+cli_status_t set_get_rzeta(const Args &args) {
+  cmdSetGet(settings.data.rzeta, 0.0f, 10.0f, args, 6);
+  return cli_status_t();
+}
+
+cli_status_t set_get_rtd(const Args &args) {
+  cmdSetGet(settings.data.rTd, 0.0f, 1.0f, args, 6);
   return cli_status_t();
 }
 
@@ -124,6 +154,11 @@ cli_status_t get_battery_volts(const Args &args) {
 
 cli_status_t do_move(const Args &args) {
   robot.do_move_trial(args);
+  return cli_status_t();
+}
+
+cli_status_t do_turn(const Args &args) {
+  robot.do_turn_trial(args);
   return cli_status_t();
 }
 

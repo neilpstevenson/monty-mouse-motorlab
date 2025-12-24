@@ -48,13 +48,17 @@ AnalogueConverter adc;
 Encoders encoders;
 // Sensors sensors;
 Motors motors;
-Profile profile;
+Profile forward;
+Profile rotation;
 Settings settings;
 Robot robot;
 CommandLineInterface cli;
 Reporter reporter;
 
 void setup() {
+  #ifndef USE_USB_SERIAL_PORT
+  Serial.begin(BAUDRATE);   // Ensure USB port is always initialised
+  #endif
   SerialPort.begin(BAUDRATE);
   adc.begin();
   systick.begin();
@@ -72,15 +76,22 @@ void setup() {
   cli.add_cmd(init_settings, PSTR("#"), PSTR("Initialise settings to defaults"));
   cli.add_cmd(set_get_km, PSTR("KM"), PSTR("Set/Get Km"));
   cli.add_cmd(set_get_tm, PSTR("TM"), PSTR("Set/Get Tm"));
+  cli.add_cmd(set_get_rkm, PSTR("RKM"), PSTR("Set/Get Km"));
+  cli.add_cmd(set_get_rtm, PSTR("RTM"), PSTR("Set/Get Tm"));
   cli.add_cmd(set_get_kp, PSTR("KP"), PSTR("Set/Get Kp"));
   cli.add_cmd(set_get_kd, PSTR("KD"), PSTR("Set/Get Kd"));
   cli.add_cmd(set_get_zeta, PSTR("ZETA"), PSTR("Set/Get Damping Ratio, zeta"));
+  cli.add_cmd(set_get_rtd, PSTR("RTD"), PSTR("Set/Get Rot settling time, rTd"));
+  cli.add_cmd(set_get_rkp, PSTR("RKP"), PSTR("Set/Get Rot rKp"));
+  cli.add_cmd(set_get_rkd, PSTR("RKD"), PSTR("Set/Get Rot rKd"));
+  cli.add_cmd(set_get_rzeta, PSTR("RZETA"), PSTR("Set/Get Rot Damping Ratio, rzeta"));
   cli.add_cmd(set_get_td, PSTR("TD"), PSTR("Set/Get settling time, Td"));
   cli.add_cmd(set_get_bias_ff, PSTR("BIASFF"), PSTR("Set/Get bias feed forward"));
   cli.add_cmd(set_get_speed_ff, PSTR("SPEEDFF"), PSTR("Set/Get speed feedforward"));
   cli.add_cmd(set_get_acc_ff, PSTR("ACCFF"), PSTR("Set/Get accel feedforward"));
   cli.add_cmd(get_battery_volts, PSTR("BATT"), PSTR("Get battery Voltage"));
   cli.add_cmd(do_move, PSTR("MOVE"), PSTR("Execute move profile"));
+  cli.add_cmd(do_turn, PSTR("TURN"), PSTR("Execute turn profile"));
   cli.add_cmd(do_step, PSTR("STEP"), PSTR("Execute single step"));
   cli.add_cmd(do_encoders, PSTR("ENC"), PSTR("Set/Get KM"));
   cli.add_cmd(do_open_loop, PSTR("VOLTS"), PSTR("Execute open loop"));

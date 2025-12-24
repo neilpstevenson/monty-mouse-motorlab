@@ -83,8 +83,8 @@ public:
       s_report_time += s_report_interval;
       print_justified(int(millis() - s_start_time), 6);
       print_justified(int(encoders.robot_distance()), 6);
-      print_justified(int(profile.position()), 6);
-      print_justified(int(profile.speed()), 6);
+      print_justified(int(forward.position()), 6);
+      print_justified(int(forward.speed()), 6);
       print_justified(motors.get_fwd_millivolts(), 6);
       SerialPort.println();
     }
@@ -111,7 +111,7 @@ public:
    *
    */
   void report_controller_header() {
-    SerialPort.println(F("$time set_pos robot_pos set_speed robot_speed ctrl_volts ff_volts, motor_volts"));
+    SerialPort.println(F("$time set_pos robot_pos set_speed robot_speed ctrl_volts ff_volts motor_volts"));
     s_start_time = millis();
     s_report_time = s_start_time;
   }
@@ -124,8 +124,7 @@ public:
     float robot_speed = encoders.robot_speed();
     float ctrl_volts = motors.posCtrlVolts();
     float ff_volts = motors.leftFeedForwardVolts();
-    float motor_volts = motors.get_left_motor_volts();
-    ;
+    float motor_volts = motors.get_left_motor_volts(); //motors.rotCtrlVolts(); 
 
     SerialPort.print(millis() - s_start_time);
     SerialPort.print(' ');
@@ -143,6 +142,59 @@ public:
     SerialPort.print(' ');
     SerialPort.print(motor_volts);
     SerialPort.print(' ');
+    SerialPort.println();
+  }
+
+void report_rotation_controller_header() {
+    SerialPort.println(F("$time set_fpos robot_fpos set_angle robot_angle set_fspeed robot_fspeed set_omega robot_omega ctrl_fvolts ctrl_rotvolts ff_lvolts motor_lvolts ff_rvolts motor_rvolts"));
+    s_start_time = millis();
+    s_report_time = s_start_time;
+  }
+
+  void report_rotation_controller(Profile &forward, Profile &rotation) {
+
+    // Requested position & angle
+    float set_fpos = forward.position();
+    float robot_fpos = encoders.robot_distance();
+    float set_angle  = rotation.position();
+    float robot_angle  = encoders.robot_angle();
+
+    // Speeds
+    float set_fspeed  = forward.speed();
+    float robot_fspeed = encoders.robot_speed();
+    float set_omega = rotation.speed();
+    float robot_omega = encoders.robot_omega();
+
+    // Controller outputs
+    float ctrl_fvolts = motors.posCtrlVolts();
+    float ctrl_rotvolts = motors.rotCtrlVolts();
+
+    // Resulting motor status
+    float ff_lvolts = motors.leftFeedForwardVolts();
+    float motor_lvolts = motors.get_left_motor_volts();
+
+    float ff_rvolts = motors.rightFeedForwardVolts();
+    float motor_rvolts = motors.get_right_motor_volts();
+
+    SerialPort.print(millis() - s_start_time);
+    SerialPort.print(' ');    SerialPort.print(set_fpos);
+    SerialPort.print(' ');    SerialPort.print(robot_fpos);
+    SerialPort.print(' ');    SerialPort.print(set_angle);
+    SerialPort.print(' ');    SerialPort.print(robot_angle);
+
+    SerialPort.print(' ');    SerialPort.print(set_fspeed);
+    SerialPort.print(' ');    SerialPort.print(robot_fspeed);
+    SerialPort.print(' ');    SerialPort.print(set_omega);
+    SerialPort.print(' ');    SerialPort.print(robot_omega);
+
+    SerialPort.print(' ');    SerialPort.print(ctrl_fvolts);
+    SerialPort.print(' ');    SerialPort.print(ctrl_rotvolts);
+
+    SerialPort.print(' ');    SerialPort.print(ff_lvolts);
+    SerialPort.print(' ');    SerialPort.print(motor_lvolts);
+
+    SerialPort.print(' ');    SerialPort.print(ff_rvolts);
+    SerialPort.print(' ');    SerialPort.print(motor_rvolts);
     SerialPort.println();
   }
 };

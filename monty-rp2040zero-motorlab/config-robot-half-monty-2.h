@@ -199,8 +199,8 @@ const float LOOP_INTERVAL = (1.0 / LOOP_FREQUENCY);
 // constnats here: https://youtu.be/BrabDeHGsa0
 const float FWD_KM = 153.8; //87500; //2500; //1200.0; //900.0;  // mm/s/Volt
 const float FWD_TM = 0.054; //0.000091428; //0.150; //0.220; //0.190; //0.220;  // forward time constant
-const float ROT_KM = 1500.0;  // deg/s/Volt
-const float ROT_TM = 0.250;  // rotation time constant
+const float ROT_KM = 300; //1500.0;  // deg/s/Volt
+const float ROT_TM = 0.045; //0.250;  // rotation time constant
 
 // Motor Feedforward
 /***
@@ -239,10 +239,10 @@ const float FWD_KD = LOOP_FREQUENCY * (8 * FWD_TM - FWD_TD) / (FWD_KM * FWD_TD);
 
 // rotation motion controller constants
 const float ROT_ZETA = 0.707;
-const float ROT_TD = ROT_TM;
+const float ROT_TD = 0.200; //ROT_TM;
 
-const float ROT_KP = 0.1; //16 * ROT_TM / (ROT_KM * ROT_ZETA * ROT_ZETA * ROT_TD * ROT_TD);
-const float ROT_KD = 0.00; //LOOP_FREQUENCY * (8 * ROT_TM - ROT_TD) / (ROT_KM * ROT_TD);
+const float ROT_KP = 16 * ROT_TM / (ROT_KM * ROT_ZETA * ROT_ZETA * ROT_TD * ROT_TD);
+const float ROT_KD = LOOP_FREQUENCY * (8 * ROT_TM - ROT_TD) / (ROT_KM * ROT_TD);
 
 // controller constants for the steering controller
 const float STEERING_KP = 0.002; //0.0005;

@@ -55,7 +55,7 @@ class Motion {
     motors.stop();
     motors.disable_controllers();
     encoders.reset();
-    profile.reset();
+    forward.reset();
     motors.reset_controllers();
     motors.enable_controllers();
   }
@@ -69,47 +69,73 @@ class Motion {
   }
 
   float position() {
-    return profile.position();
+    return forward.position();
   }
 
   float velocity() {
-    return profile.speed();
+    return forward.speed();
   }
 
   float acceleration() {
-    return profile.acceleration();
+    return forward.acceleration();
   }
 
   void set_target_velocity(float velocity) {
-    profile.set_target_speed(velocity);
+    forward.set_target_speed(velocity);
+  }
+  
+  float angle() {
+    return rotation.position();
   }
 
+  float omega() {
+    return rotation.speed();
+  }
+
+  float alpha() {
+    return rotation.acceleration();
+  }
+
+
   void start_move(float distance, float top_speed, float final_speed, float acceleration) {
-    profile.start(distance, top_speed, final_speed, acceleration);
+    forward.start(distance, top_speed, final_speed, acceleration);
   }
 
   void stop_move() {
-    profile.stop();
+    forward.stop();
   }
 
   bool move_finished() {
-    return profile.is_finished();
+    return forward.is_finished();
   }
 
   void move(float distance, float top_speed, float final_speed, float acceleration) {
-    profile.start(distance, top_speed, final_speed, acceleration);
+    forward.start(distance, top_speed, final_speed, acceleration);
+  }
+
+  void start_turn(float distance, float top_speed, float final_speed, float acceleration) {
+    rotation.start(distance, top_speed, final_speed, acceleration);
+  }
+
+  bool turn_finished() {
+    return rotation.is_finished();
+  }
+
+  void turn(float distance, float top_speed, float final_speed, float acceleration) {
+    rotation.start(distance, top_speed, final_speed, acceleration);
   }
 
   void update() {
-    profile.update();
+    forward.update();
+    rotation.update();
   }
 
   void set_position(float pos) {
-    profile.set_position(pos);
+    forward.set_position(pos);
   }
 
   void adjust_forward_position(float delta) {
-    profile.adjust_position(delta);
+    forward.adjust_position(delta);
   }
 
   //***************************************************************************//
@@ -129,8 +155,8 @@ class Motion {
    * @brief bring the robot to a halt at a specific distance
    */
   void stop_at(float position) {
-    float remaining = position - profile.position();
-    profile.start(remaining, profile.speed(), 0, profile.acceleration());
+    float remaining = position - forward.position();
+    forward.start(remaining, forward.speed(), 0, forward.acceleration());
   }
 
   /**
@@ -147,7 +173,7 @@ class Motion {
    * @brief bring the robot to a halt after a specific distance
    */
   void stop_after(float distance) {
-    profile.start(distance, profile.speed(), 0, profile.acceleration());
+    forward.start(distance, forward.speed(), 0, forward.acceleration());
   }
 
   /**
@@ -157,7 +183,7 @@ class Motion {
    * @brief wait until the given position is reached
    */
   void wait_until_position(float position) {
-    while (profile.position() < position) {
+    while (forward.position() < position) {
       delay(2);
     }
   }
@@ -169,7 +195,7 @@ class Motion {
    * @brief wait until the given distance has been travelled
    */
   void wait_until_distance(float distance) {
-    float target = profile.position() + distance;
+    float target = forward.position() + distance;
     wait_until_position(target);
   }
 };

@@ -74,7 +74,7 @@ class Systick {
 //    sensors.update();
 //    battery.update();
 
-    motors.update_controllers(motion.velocity(), 0, 0);
+    motors.update_controllers(motion.velocity(), motion.omega(), 0);
     // NOTE: no code should follow this line;
   }
 

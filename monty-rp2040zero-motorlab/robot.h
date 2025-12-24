@@ -68,7 +68,7 @@ public:
   void reset_drive() {
     motors.stop();
     encoders.reset();
-    profile.reset();
+    forward.reset();
     motors.reset_controllers();
   }
 
@@ -192,15 +192,107 @@ public:
     }
 
     reporter.report_controller_header();
-    profile.start(dist, topSpeed, endSpeed, accel);
-    while (!profile.is_finished()) {
-      reporter.report_controller(profile);
+    forward.start(dist, topSpeed, endSpeed, accel);
+    while (!forward.is_finished()) {
+      reporter.report_controller(forward);
     }
-    motors.set_left_motor_volts(0);
+    motors.stop();
     motors.disable_controllers();
     uint32_t end_time = millis();
     while (millis() - end_time < 200) {
-      reporter.report_controller(profile);
+      reporter.report_controller(forward);
+    }
+    disable_drive();
+    SerialPort.println('#');
+  }
+
+void do_turn_trial(const Args &args) {
+    int mode = atoi(args.argv[1]);
+    float ang = atof(args.argv[2]);
+    float rotSpeed = atof(args.argv[3]);
+    float rotAccel = atof(args.argv[4]);
+    float fwdSpeed = atof(args.argv[5]);
+    float fwdAccl = atof(args.argv[6]);
+    float leadInDist = atof(args.argv[7]);
+    float leadOutDist = atof(args.argv[8]);
+    if (ang == 0) {
+      ang = 90;    // Degrees
+    }
+    if (rotSpeed == 0) {
+      rotSpeed = OMEGA_SPIN_TURN_DEFAULT;
+    }
+    if (rotAccel == 0) {
+      rotAccel = ALPHA_SPIN_TURN_DEFAULT;
+    }
+    if (fwdSpeed == 0) {
+      fwdSpeed = SEARCH_SPEED_DEFAULT;
+    }
+    if (fwdAccl == 0) {
+      fwdAccl = SEARCH_ACCEL_HALF_CELL(fwdSpeed);
+    }
+    if (leadInDist == 0) {
+      leadInDist = 100;
+    }
+    if (leadOutDist == 0) {
+      leadOutDist = 100;
+    }
+    enable_drive();
+    SerialPort.print(F("# "));
+    SerialPort.print(args.argv[0]);
+    SerialPort.print(' ');
+    SerialPort.print(mode);
+    SerialPort.print(' ');
+    SerialPort.print(ang);
+    SerialPort.print(' ');
+    SerialPort.print(rotSpeed);
+    SerialPort.print(' ');
+    SerialPort.print(rotAccel);
+    SerialPort.print(' ');
+    SerialPort.print(fwdSpeed);
+    SerialPort.print(' ');
+    SerialPort.print(fwdAccl);
+    SerialPort.print(' ');
+    SerialPort.print(leadInDist);
+    SerialPort.print(' ');
+    SerialPort.print(leadOutDist);
+    SerialPort.print(' ');
+    SerialPort.println();
+    switch (mode) {
+      case 0:
+        SerialPort.println(F("# Full Control"));
+        motors.enable_feed_forward();
+        motors.enable_controllers();
+        break;
+      case 1:
+        SerialPort.println(F("# No Feedforward"));
+        motors.disable_feed_forward();
+        motors.enable_controllers();
+        break;
+      case 2:
+        SerialPort.println(F("# Only Feedforward"));
+        motors.enable_feed_forward();
+        motors.disable_controllers();
+        break;
+    }
+
+    reporter.report_rotation_controller_header();
+    forward.start(leadInDist, fwdSpeed, fwdSpeed, fwdAccl);
+    while (!forward.is_finished()) {
+      reporter.report_rotation_controller(forward, rotation);
+    }
+    rotation.start(ang, rotSpeed, 0, rotAccel);
+    while (!rotation.is_finished()) {
+      reporter.report_rotation_controller(forward, rotation);
+    }
+    forward.start(leadOutDist, fwdSpeed, 0, fwdAccl);
+    while (!forward.is_finished()) {
+      reporter.report_rotation_controller(forward, rotation);
+    }
+    motors.stop();
+    motors.disable_controllers();
+    uint32_t end_time = millis();
+    while (millis() - end_time < 200) {
+      reporter.report_rotation_controller(forward, rotation);
     }
     disable_drive();
     SerialPort.println('#');
@@ -218,16 +310,16 @@ public:
     uint32_t start_time = millis();
     reporter.report_controller_header();
     while (millis() - start_time < 100) {
-      reporter.report_controller(profile);
+      reporter.report_controller(forward);
     }
-    profile.set_position(dist);
+    forward.set_position(dist);
     while (millis() - start_time < 600) {
-      reporter.report_controller(profile);
+      reporter.report_controller(forward);
     }
     motors.set_left_motor_volts(0);
     uint32_t end_time = millis();
     while (millis() - end_time < 100) {
-      reporter.report_controller(profile);
+      reporter.report_controller(forward);
     }
     disable_drive();
     SerialPort.println('#');

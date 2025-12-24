@@ -126,4 +126,7 @@ const float COUNTS_PER_DEG = 1.0 / DEG_PER_COUNT;
 const float KP = 16 * FWD_TM / (FWD_KM * FWD_ZETA * FWD_ZETA * FWD_TD * FWD_TD);
 const float KD = (8 * FWD_TM - FWD_TD) / (FWD_KM * FWD_TD);
 
+const float RKP = 16 * ROT_TM / (ROT_KM * ROT_ZETA * ROT_ZETA * ROT_TD * ROT_TD);
+const float RKD = (8 * ROT_TM - ROT_TD) / (ROT_KM * ROT_TD);
+
 #endif

@@ -39,7 +39,8 @@
 //***************************************************************************//
 class Profile;
 
-extern Profile profile;
+extern Profile forward;
+extern Profile rotation;
 
 enum ProfileState : uint8_t {
   CS_IDLE = 0,

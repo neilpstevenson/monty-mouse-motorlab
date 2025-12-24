@@ -64,8 +64,8 @@ class Motors {
     m_controller_output_enabled = false;
   }
 
-  void set_closed_loop(bool enabled) {
-    m_controller_output_enabled = enabled;
+  void set_closed_loop(bool state) {
+    m_closed_loop = state;
   }
 
   void reset_controllers() {
@@ -117,16 +117,7 @@ class Motors {
     float increment = m_velocity * LOOP_INTERVAL;
     float change = encoders.robot_fwd_change();
     m_fwd_error += increment - change;
-	//#define APPLY_POSITION_ERROR_FILTER
-	#ifdef APPLY_POSITION_ERROR_FILTER
-	// Apply a simple 1:4 filter
-	static float filtered_diff = 0;
-    float new_diff = m_fwd_error - m_previous_fwd_error;
-	filtered_diff = filtered_diff * 0.75 + new_diff * 0.25;
-    float diff = filtered_diff;
-	#else
     float diff = m_fwd_error - m_previous_fwd_error;
-	#endif
     m_previous_fwd_error = m_fwd_error;
     float output = settings.data.Kp * m_fwd_error + settings.data.Kd * diff * LOOP_FREQUENCY;
     //if (m_controller_output_enabled) {
@@ -149,17 +140,15 @@ class Motors {
    *
    * A separate controller calculates the steering adjustment term.
    */
-/*   
   float angle_controller(float steering_adjustment) {
     float increment = m_omega * LOOP_INTERVAL;
     m_rot_error += increment - encoders.robot_rot_change();
     m_rot_error += steering_adjustment;
     float diff = m_rot_error - m_previous_rot_error;
     m_previous_rot_error = m_rot_error;
-    float output = ROT_KP * m_rot_error + ROT_KD * diff;
+    float output = settings.data.rKp * m_rot_error + settings.data.rKd * diff * LOOP_FREQUENCY;
     return output;
   }
-*/
 
   /**
    * Feed forward attempts to work out what voltage the motors would need
@@ -216,24 +205,24 @@ class Motors {
     m_velocity = velocity;
     m_omega = omega;
     pos_output = position_controller();
-//    float rot_output = angle_controller(steering_adjustment);
-    float left_output = pos_output;
-    float right_output = pos_output;
-    left_speed = m_velocity;
-    right_speed = m_velocity;
-//    left_output = pos_output - rot_output;
-//    right_output = pos_output + rot_output;
+    rot_output = angle_controller(steering_adjustment);
+    float left_output = 0;
+    float right_output = 0;
+    if (m_controller_output_enabled) {
+      left_output = pos_output - rot_output;
+      right_output = pos_output + rot_output;
+    }
 
-//    float tangent_speed = m_omega * MOUSE_RADIUS * RADIANS_PER_DEGREE;
-//    left_speed = m_velocity - tangent_speed;
-//    right_speed = m_velocity + tangent_speed;
+    float tangent_speed = m_omega * MOUSE_RADIUS * RADIANS_PER_DEGREE;
+    left_speed = m_velocity - tangent_speed;
+    right_speed = m_velocity + tangent_speed;
     left_ff = leftFeedForward(left_speed);
     right_ff = rightFeedForward(right_speed);
     if (m_feedforward_enabled) {
       left_output += left_ff;
       right_output += right_ff;
     }
-    if (m_controller_output_enabled) {
+    if (m_closed_loop) {
       set_right_motor_volts(right_output);
       set_left_motor_volts(left_output);
     }
@@ -356,6 +345,10 @@ class Motors {
 	  return pos_output;
   }
   
+  float rotCtrlVolts() {
+	  return rot_output;
+  }
+  
   float get_fwd_error() {
     float err = 0;
     ATOMIC {
@@ -381,7 +374,9 @@ class Motors {
  
   bool m_controller_output_enabled = false;
   bool m_feedforward_enabled = true;
+  bool m_closed_loop = true;
   float pos_output;
+  float rot_output;
   float left_speed;
   float right_speed;
   float left_ff;

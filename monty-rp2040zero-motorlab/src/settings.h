@@ -20,6 +20,12 @@ struct Settings {
     float Td;
     float Kp;
     float Kd;
+    float rKm;
+    float rTm;
+    float rzeta;
+    float rTd;
+    float rKp;
+    float rKd;
     float biasFF;
     float speedFF;
     float accFF;
@@ -56,6 +62,8 @@ struct Settings {
     SerialPort.print(F("    degPerCount = "));    SerialPort.println(data.degPerCount, 5);
     SerialPort.print(F("             Km = "));    SerialPort.println(data.Km, 2);
     SerialPort.print(F("             Tm = "));    SerialPort.println(data.Tm, 5);
+    SerialPort.print(F("            rKm = "));    SerialPort.println(data.rKm, 2);
+    SerialPort.print(F("            rTm = "));    SerialPort.println(data.rTm, 5);
     SerialPort.print(F("         biasFF = "));    SerialPort.println(data.biasFF, 5);
     SerialPort.print(F("        speedFF = "));    SerialPort.println(data.speedFF, 5);
     SerialPort.print(F("          accFF = "));    SerialPort.println(data.accFF, 5);
@@ -63,6 +71,10 @@ struct Settings {
     SerialPort.print(F("             Td = "));    SerialPort.println(data.Td, 5);
     SerialPort.print(F("             KP = "));    SerialPort.println(data.Kp, 5);
     SerialPort.print(F("             KD = "));    SerialPort.println(data.Kd, 5);
+    SerialPort.print(F("          rZeta = "));    SerialPort.println(data.rzeta, 5);
+    SerialPort.print(F("            rTd = "));    SerialPort.println(data.rTd, 5);
+    SerialPort.print(F("            rKP = "));    SerialPort.println(data.rKp, 5);
+    SerialPort.print(F("            rKD = "));    SerialPort.println(data.rKd, 5);
   };
 };
 /* clang-format on */
@@ -82,6 +94,12 @@ const Settings::Data defaults = {
   Td : FWD_TD,
   Kp : KP,
   Kd : KD,
+  rKm : ROT_KM,
+  rTm : ROT_TM,
+  rzeta : ROT_ZETA,
+  rTd : ROT_TD,
+  rKp : RKP,
+  rKd : RKD,
   biasFF : BIAS_FF,
   speedFF : SPEED_FF,
   accFF : ACC_FF,
