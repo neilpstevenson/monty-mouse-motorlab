@@ -172,8 +172,8 @@ class Dashboard(QMainWindow):
         self.text_box.setFont(QFont('mono'))
         self.text_box.setLineWrapMode(QPlainTextEdit.NoWrap)
 
-        self.label_biasff = QLabel("Bias FF")
-        self.spin_biasff = QSpinBox()
+        #self.label_biasff = QLabel("Bias FF")
+        #self.spin_biasff = QSpinBox()
 
         #### SETTINGS GROUP ##########################################
         self.settings_grid = QGridLayout()
@@ -316,6 +316,17 @@ class Dashboard(QMainWindow):
         button_layout.addWidget(self.btn_turn)
         button_layout.addWidget(self.btn_reset)
 
+        # Text box for additional ad hoc parameters
+        self.params_text_box = QPlainTextEdit()
+        self.params_text_box.setFont(QFont('mono'))
+        self.params_text_box.setFixedHeight(24)
+        self.params_text_box.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.params_text_box.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.params_text_box.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.params_text_box.setPlaceholderText('<add additional parameters here>')
+        params_text_box_layout = QHBoxLayout()
+        params_text_box_layout.addWidget(self.params_text_box)
+
         #####################################################
         option_layout = QHBoxLayout()
         self.rb_full = QRadioButton("Full Control")
@@ -344,6 +355,7 @@ class Dashboard(QMainWindow):
         side_layout.addWidget(self.HLine())
         side_layout.addLayout(option_layout)
         side_layout.addLayout(button_layout)
+        side_layout.addLayout(params_text_box_layout)
         side_layout.addWidget(settings_group)
         self.side_bar.setLayout(side_layout)
         self.side_bar.setFixedWidth(300)
@@ -707,7 +719,7 @@ class Dashboard(QMainWindow):
     def send_move(self):
         if not self.device:
             return
-        self.data = self.query(F'MOVE {self.move_mode}\n')
+        self.data = self.query(F'MOVE {self.move_mode} {self.params_text_box.toPlainText()}\n')
         self.log_data()
         d = [[] for i in range(self.nChannels)]
         # "$time set_pos robot_pos set_speed robot_speed ctrl_volts ff_volts, motor_volts"
@@ -765,7 +777,7 @@ class Dashboard(QMainWindow):
     def send_turn(self):
         if not self.device:
             return
-        self.data = self.query(F'TURN {self.move_mode}\n')
+        self.data = self.query(F'TURN {self.move_mode} {self.params_text_box.toPlainText()}\n')
         self.log_data()
         d = [[] for i in range(self.nChannels)]
         #   0      1        2          3         4            5           6         7          8             9          10           11          12          13         14
