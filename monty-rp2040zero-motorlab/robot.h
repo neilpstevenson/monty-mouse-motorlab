@@ -69,6 +69,7 @@ public:
     motors.stop();
     encoders.reset();
     forward.reset();
+    rotation.reset();
     motors.reset_controllers();
   }
 

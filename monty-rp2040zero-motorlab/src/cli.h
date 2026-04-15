@@ -37,7 +37,7 @@
 #include <Arduino.h>
 #include <stdint.h>
 
-const int INPUT_BUFFER_SIZE = 32;
+const int INPUT_BUFFER_SIZE = 100;
 const int MAX_CMD_COUNT = 24;
 
 class CommandLineInterface {

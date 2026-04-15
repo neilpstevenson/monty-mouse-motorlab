@@ -56,6 +56,7 @@ class Motion {
     motors.disable_controllers();
     encoders.reset();
     forward.reset();
+    rotation.reset();
     motors.reset_controllers();
     motors.enable_controllers();
   }
