@@ -194,6 +194,10 @@ const float DEG_PER_MM_DIFFERENCE = (180.0 / (2 * MOUSE_RADIUS * PI));
 const float LOOP_FREQUENCY = 500.0;
 const float LOOP_INTERVAL = (1.0 / LOOP_FREQUENCY);
 
+// Since we have a low-res encoder on the motor, use a n-stage averager as a 
+// filter to reduce controller spikes in the D-term
+const int ENCODER_AVERAGER_LENGTH = 16;
+
 // Dynamic performance constants
 // There is a video describing how to get these numbers and calculate the feedforward
 // constnats here: https://youtu.be/BrabDeHGsa0

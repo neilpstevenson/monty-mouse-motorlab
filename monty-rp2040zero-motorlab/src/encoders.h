@@ -222,8 +222,13 @@ class Encoders {
 	#ifdef SMOOTH_SPEED
   float m_fwd_change_filtered;
   #endif
+  #ifdef ENCODER_AVERAGER_LENGTH
+  FifoAverager<ENCODER_AVERAGER_LENGTH> m_left_averager;
+  FifoAverager<ENCODER_AVERAGER_LENGTH> m_right_averager;
+  #else
   FifoAverager<8> m_left_averager;
   FifoAverager<8> m_right_averager;
+  #endif
   float m_rot_change;
   // internal use only to track encoder input edges
   //int m_left_counter;
