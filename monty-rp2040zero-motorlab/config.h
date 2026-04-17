@@ -95,8 +95,10 @@ const float DEGREES_PER_RADIAN = 360.0 / 2 * PI;
 #define ROBOT_MOTORLAB_UNLOADED 98
 #define ROBOT_HALF_MONTY 80
 #define ROBOT_HALF_MONTY_2 81
+#define ROBOT_HALF_MONTY_MINI 82
+#define ROBOT_HALF_MONTY_GEMINI 83
 
-#define ROBOT_NAME ROBOT_HALF_MONTY_2
+#define ROBOT_NAME ROBOT_HALF_MONTY_MINI
 
 // get the configuration for this setup
 // it has stuff like encoder pulse and gear ratio
@@ -111,6 +113,12 @@ const float DEGREES_PER_RADIAN = 360.0 / 2 * PI;
 #elif ROBOT_NAME == ROBOT_HALF_MONTY_2
   #include "config-hardware-mini-rp2040zero.h"
   #include "config-robot-half-monty-2.h"
+#elif ROBOT_NAME == ROBOT_HALF_MONTY_MINI
+  #include "config-hardware-mini-rp2040zero.h"
+  #include "config-robot-monty-mini.h"
+#elif ROBOT_NAME == ROBOT_HALF_MONTY_GEMINI
+  #include "config-hardware-gemini-purple.h"
+  #include "config-robot-montytwins-purple.h"
 #else
   #error "NO ROBOT DEFINED"
 #endif
